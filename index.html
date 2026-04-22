@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StarGod - System</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+
+<style>
+    /* Genel Sıfırlama ve Arka Plan */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        background: #050505; /* Tam siyah yerine çok koyu gri/siyah daha şık durur */
+        font-family: 'Orbitron', sans-serif;
+        text-align: center;
+        color: #ff4040;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden; /* Canvas taşmalarını engellemek için */
+    }
+
+    /* Mouse efekti için Canvas */
+    #canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+        pointer-events: none; /* Tıklamaları engellemesin diye */
+    }
+
+    /* Giriş Paneli Kutusu (Glassmorphism / Neon Etkisi) */
+    .login-container {
+        position: relative;
+        z-index: 1;
+        background: rgba(20, 0, 0, 0.6); /* Yarı saydam koyu kırmızı/siyah */
+        padding: 50px 40px;
+        border-radius: 20px;
+        border: 1px solid rgba(255, 64, 64, 0.3);
+        box-shadow: 0 0 30px rgba(255, 0, 0, 0.2), inset 0 0 20px rgba(255, 0, 0, 0.1);
+        backdrop-filter: blur(10px);
+        width: 380px;
+        animation: fadeIn 1s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    h1 {
+        font-weight: 900;
+        font-size: 32px;
+        text-shadow: 0 0 15px #ff0000, 0 0 30px #880000;
+        margin-bottom: 10px;
+        letter-spacing: 2px;
+    }
+
+    .key-info {
+        font-size: 12px;
+        color: #a0a0a0;
+        margin-bottom: 30px;
+        letter-spacing: 1px;
+    }
+
+    .key-info span {
+        color: #ff4040;
+        text-shadow: 0 0 5px #ff0000;
+    }
+
+    /* Modern Input Tasarımı */
+    input {
+        display: block;
+        width: 100%;
+        padding: 15px;
+        margin-bottom: 25px;
+        background: rgba(0, 0, 0, 0.5);
+        border: none;
+        border-bottom: 2px solid #880000;
+        color: white;
+        font-size: 16px;
+        font-family: 'Orbitron', sans-serif;
+        text-align: center;
+        outline: none;
+        transition: all 0.3s ease;
+        letter-spacing: 2px;
+    }
+
+    input::placeholder {
+        color: rgba(255, 255, 255, 0.3);
+    }
+
+    input:focus {
+        border-bottom: 2px solid #ff4040;
+        box-shadow: 0 10px 10px -10px #ff4040;
+        background: rgba(255, 0, 0, 0.05);
+    }
+
+    /* Şık ve Neon Buton Tasarımı */
+    button {
+        width: 100%;
+        padding: 15px;
+        background: linear-gradient(45deg, #880000, #ff0000);
+        border: none;
+        color: white;
+        font-size: 18px;
+        font-family: 'Orbitron', sans-serif;
+        font-weight: 700;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        box-shadow: 0 0 15px rgba(255, 0, 0, 0.4);
+    }
+
+    button:hover {
+        background: linear-gradient(45deg, #ff0000, #ff4040);
+        box-shadow: 0 0 25px rgba(255, 0, 0, 0.8);
+        transform: translateY(-2px);
+    }
+
+    button:active {
+        transform: translateY(2px);
+        box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+    }
+
+    /* Hata Mesajı Animasyonu */
+    .error {
+        margin-top: 20px;
+        color: #ff4040;
+        font-size: 14px;
+        text-shadow: 0 0 10px red;
+        min-height: 20px;
+    }
+</style>
+
+</head>
+<body>
+
+<canvas id="canvas"></canvas>
+
+<div class="login-container">
+    <h1>StarGod</h1>
+    <p class="key-info">SYSTEM KEY: <span>https://t.me/stargodx</span></p>
+
+    <input type="password" id="password" placeholder="ENTER KEY" autocomplete="off">
+    <button onclick="login()">Access System</button>
+
+    <p class="error" id="error"></p>
+</div>
+
+<script>
+// --- SENİN ORİJİNAL GİRİŞ MANTIĞIN (KODU BOZMADIM) ---
+function login() {
+    var key = document.getElementById("password").value;
+
+    if (key === "ZXCFR-DFHAKL-MALSTARGOD123") {
+        localStorage.setItem("auth", "true");
+        window.location.href = "panel.html";
+    } else {
+        document.getElementById("error").innerText = "ACCESS DENIED - WRONG KEY!";
+        
+        // Hata yazısına ufak bir titreme efekti ekledim
+        var errorEl = document.getElementById("error");
+        errorEl.style.transform = "translateX(5px)";
+        setTimeout(() => errorEl.style.transform = "translateX(-5px)", 50);
+        setTimeout(() => errorEl.style.transform = "translateX(5px)", 100);
+        setTimeout(() => errorEl.style.transform = "translateX(0)", 150);
+    }
+}
+
+// --- GÖKKUŞAĞI MOUSE TAKİP EFEKTİ (RAINBOW TRAIL) ---
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let trail = [];
+let hue = 0;
+
+// Ekran boyutu değiştiğinde canvası güncelle
+window.addEventListener("resize", () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+});
+
+// Mouse hareketini algıla
+window.addEventListener("mousemove", (e) => {
+    trail.push({ x: e.clientX, y: e.clientY });
+    // Çizginin uzunluğu (Değeri artırırsan kuyruk uzar)
+    if (trail.length > 35) { 
+        trail.shift();
+    }
+});
+
+// Çizim fonksiyonu
+function draw() {
+    // Önceki kareyi temizle
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    if (trail.length > 1) {
+        ctx.beginPath();
+        ctx.moveTo(trail[0].x, trail[0].y);
+        
+        for (let i = 1; i < trail.length; i++) {
+            // Çizgiye yumuşak bir eğim ver
+            ctx.lineTo(trail[i].x, trail[i].y);
+        }
+
+        // Gökkuşağı renkleri ve parlama (glow) efekti
+        ctx.strokeStyle = `hsl(${hue}, 100%, 50%)`;
+        ctx.lineWidth = 5;
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+        
+        // Parlama Ayarları
+        ctx.shadowBlur = 15; 
+        ctx.shadowColor = `hsl(${hue}, 100%, 50%)`;
+        
+        ctx.stroke();
+    }
+
+    // Rengi sürekli değiştir (Gökkuşağı efekti)
+    hue += 4; 
+
+    // Mouse durduğunda çizginin yavaşça kaybolması için
+    if (trail.length > 0) {
+        trail.shift(); 
+    }
+
+    requestAnimationFrame(draw);
+}
+
+// Efekti başlat
+draw();
+</script>
+
+</body>
+</html>
