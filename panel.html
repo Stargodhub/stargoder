@@ -1,0 +1,831 @@
+<html lang="tr"><head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>:D</title>
+    <link rel="icon" type="image/gif" href="./_D_files/sa.png">
+    
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            background:#000;
+            min-height:100vh;
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            padding:6vh 12px 40px;
+            font-family:'Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif;
+            overflow-x:hidden;
+            user-select:none;
+            -webkit-user-select:none;
+            color:#ff1a1a;
+            position:relative;
+            cursor:none;
+        }
+        #canvas {
+            position:fixed;
+            top:0; left:0;
+            width:100%; height:100%;
+            z-index:-1;
+            pointer-events:none;
+            cursor:none;
+        }
+        ::-webkit-scrollbar { width:10px; }
+        ::-webkit-scrollbar-track { background:#0a0a0a; border-left:1px solid #1a0000; }
+        ::-webkit-scrollbar-thumb { background:#880000; border-radius:4px; border:2px solid #0a0a0a; }
+        ::-webkit-scrollbar-thumb:hover { background:#aa0000; }
+        ::-webkit-scrollbar-corner { background:#0a0a0a; }
+
+        .gif-container { width:260px; max-width:76vw; margin:10px 0 20px 0; pointer-events:none; }
+        .gif-container img { width:100%; height:auto; object-fit:contain; image-rendering:crisp-edges; image-rendering:pixelated; pointer-events:none; -webkit-user-drag:none; }
+
+        .info-title {
+            margin:0 0 30px 0;
+            font-size:14px; font-weight:600;
+            text-align:center; max-width:90vw; line-height:1.6;
+            letter-spacing:0.4px; text-shadow:0 0 3px rgba(255,30,30,0.4);
+            background:rgba(10,0,0,0.5); padding:10px 14px;
+            border-radius:8px; border:1px solid rgba(136,0,0,0.4);
+        }
+        .info-title .highlight { color:#ff4040; font-weight:bold; text-shadow:0 0 6px rgba(255,60,60,0.7); }
+
+        .trigger-container { display:flex; gap:14px; margin-bottom:30px; flex-wrap:wrap; justify-content:center; }
+        .trigger-box {
+            width:170px; height:42px;
+            background:linear-gradient(145deg,#0f0000,#000000);
+            border:1.5px solid #880000; border-radius:8px;
+            display:flex; align-items:center; justify-content:center;
+            color:#ff1a1a; font-size:15px; font-weight:600; letter-spacing:0.7px;
+            cursor:pointer; transition:all 0.25s ease;
+            text-shadow:0 0 3px rgba(255,30,30,0.4); box-shadow:0 2px 8px rgba(0,0,0,0.6);
+        }
+        .trigger-box:hover {
+            color:#ff4040; border-color:#aa0000;
+            background:linear-gradient(145deg,#1a0000,#0f0000);
+            box-shadow:0 4px 16px rgba(170,0,0,0.4); transform:translateY(-1px);
+        }
+        .trigger-box:active { transform:scale(0.98); box-shadow:0 2px 8px rgba(170,0,0,0.3); }
+        .trigger-box.active { background:linear-gradient(145deg,#1a0000,#0a0000); border-color:#aa0000; box-shadow:0 0 14px rgba(170,0,0,0.5); }
+
+        .pass-info {
+            width:170px; height:38px; margin:0 auto 30px auto;
+            background:linear-gradient(145deg,#0f0000,#000000);
+            border:1.5px solid #880000; border-radius:8px;
+            display:flex; align-items:center; justify-content:center;
+            color:#ff1a1a; font-size:13.5px; font-weight:600; letter-spacing:0.6px;
+            pointer-events:none; text-shadow:0 0 3px rgba(255,30,30,0.4);
+            box-shadow:0 2px 8px rgba(0,0,0,0.6);
+        }
+
+        .menu-wrapper { width:100%; max-width:960px; transition:margin-bottom 0.32s ease; }
+        .menu { display:grid; grid-template-columns:repeat(auto-fit,minmax(110px,1fr)); gap:14px 16px; max-height:0; opacity:0; overflow:hidden; transition:all 0.32s ease; }
+        .menu.active { max-height:1600px; opacity:1; }
+        .menu-wrapper.active-menu { margin-bottom:620px; }
+
+        .menu-item {
+            height:48px; background:linear-gradient(145deg,#0f0000,#000000);
+            border:1.5px solid #880000; border-radius:8px;
+            display:flex; align-items:center; justify-content:center;
+            color:#ff1a1a; font-size:13px; font-weight:600; text-align:center;
+            cursor:pointer; transition:all 0.25s ease;
+            text-shadow:0 0 3px rgba(255,30,30,0.35); padding:0 10px; line-height:1.3;
+            box-shadow:0 2px 8px rgba(0,0,0,0.6);
+        }
+        .menu-item:hover {
+            color:#ff4040; border-color:#aa0000;
+            background:linear-gradient(145deg,#1a0000,#0f0000);
+            box-shadow:0 4px 16px rgba(170,0,0,0.4); transform:translateY(-1px);
+        }
+        .menu-item:active { transform:scale(0.98); box-shadow:0 2px 8px rgba(170,0,0,0.3); }
+    </style>
+</head>
+<body>
+
+<canvas id="canvas" width="414" height="721"></canvas>
+&amp;
+<div class="gif-container">
+    <img src="./_D_files/sa.png" alt="Can GIF" draggable="false">
+</div>
+
+<div class="info-title">
+        site was by <span class="highlight">@relaty&amp;@lagonhere</span>
+    </div>
+ 
+    
+    <div class="info-title">
+        Datalar <span class="highlight">@devrelax</span> adlı kişiden alınmıştır.<br>
+        Diğer tüm bilgiler farklı platformlardan toplanıp derlenmiştir, Bazı datalar eklenmedi indirmek isterseniz:https://pastebin.com/YSvmqkqj
+    </div>
+
+    <div class="info-title">
+        <span class="highlight">Sorgu Panel</span> Sitesi kurmak istemeyenler, sadece dataları indirip kurduktan sonra Tools menüsünden <span class="highlight">Sorgu Panel Tool</span> indirip kurarak kullanabilir iyi eğlenceler.....
+        "Tools'ları çoğu kişi zaten kullanamayacak kadar karmaşık olabilir, o yüzden indirmeden önce güzelce araştırın ve dikkatli olun."
+    </div>
+
+    <div class="info-title">
+        <span class="highlight">"Uyarı:</span> Arşivler menüsündeki dosyaların çoğu başka platformlardan alınmış/alıntılanmış olup, hiçbirinin sahibi ben değilim. Dolayısıyla birçok yöntem çalışmayabilir, bilgiler eski veya eksik olabilir. Bazıları ücretsiz, bazıları ise paralı kaynaklardan gelmektedir — faydalı olabilecek kısımları değerlendirebilirsiniz."**
+    </div>
+
+    <div class="info-title">
+        <span class="highlight">"Uyarı:</span> RAT Programs menüsündeki RAT'ların büyük çoğunluğunun tehlikeli olduğunu düşünüyorum. Çalıştıklarına eminim. Eğer kullanmak istiyorsanız lütfen mutlaka VDS ya da VirtualBox üzerinde çalıştırın.
+    </div>
+
+       <div class="info-title">
+        <span class="highlight">"Dikkat:</span>Logs menüsündeki verilerin büyük çoğunluğu tarafımca özenle derlenip hazırlanmıştır. Bazı kısımlar ise çeşitli forum ve kaynaklardan toplanmıştır. Toplamda **<span class="highlight">900+</span> MİLYON** hesap bulunmaktadır. İyi kullanımlar dilerim!
+    </div>
+    
+    
+    <div class="info-title">
+        <span class="highlight">"Dinle:</span>"Yapman gereken tek şey: siteyi yaymak ve popülerleştirmek. Başka hiçbir şeyle uğraşmana gerek yok, tüm odak bu! (Yakında Daha Çok Şey Eklenecek.)"
+    </div>
+
+<div class="trigger-container">
+    <div class="trigger-box" id="trigger-main">Datalar</div>
+    <div class="trigger-box" id="trigger-scripts">Sorgu Panel Scripts</div>
+    <div class="trigger-box" id="trigger-tools">Tools</div>
+    <div class="trigger-box" id="trigger-hackarsiv">Hack Arşivleri</div>
+    <div class="trigger-box" id="trigger-programs">Rat Programs</div>
+    <div class="trigger-box" id="trigger-logs">Logs</div>
+    <div class="trigger-box" id="trigger-phishing">Phishing Scripts</div>
+</div>
+
+<div class="pass-info">data şifre : @devrelax</div>
+
+<!-- Datalar menüsü -->
+<div class="menu-wrapper" id="menu-main-wrapper">
+    <div class="menu" id="menu-main">
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1Ut7EPR7ZzmKf-do2GaHE1YkYitcStFOC/view?usp=sharing">101M</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/15QnumnhgZsiAy9vaILMFpxMpGymWvk57/view?usp=sharing">109M-Tc Pro</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/19wAhByABb-KssZUWiFilIk0ANekiIef0/view?usp=sharing">116M-GSM</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/19vEG1Bag-TeB0G6zH_qGS5MiCGBotcMg/view?usp=sharing">120M-GSM</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/19rWIa_iJz3IWFfRBog61ZgvoeQ68o7-9/view?usp=sharing">135M-GSM</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1UiAJHwe6VDHlrKd7GuqM8j-lfi2lmsgM/view?usp=sharing">145M-GSM</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/16UUUBaqFqRD1guzNEk8hjvKZ3cHfZNUX/view?usp=sharing">195M-GSM</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1oo6_RJcd9qWywx6l0yvol9cRXbOyQdow/view?usp=sharing">200M-GSM</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/12sJqXnrWsd9yi-S7ryk8ILfKFTsJQ8Op/view?usp=sharing">2015-Adres</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1w3dxU6Dr9AtCN9LxaGIyTcxyShQcEylQ/view">2024-Adres</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1BRTriBMqp4ZSvlNMsUGfnW_L2v-fEiGV/view?usp=sharing">09/24-Adres</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1uBsIGe5mFe_8tiqFewywDextSPF6Rabv/view?usp=sharing">97mtapu</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1bmgiE1ZQ4aMQEzDRSSAs9WVfX2Kls4QV/view?usp=sharing">400kvesika</div>
+        <div class="menu-item" data-link="https://www.dosyaupload.com/2rFH/MOBİL_MERNİS_DATASI_-_İNSTAGRAM-_@spectaross.rar">Mobil Mernis</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/14kvsMQ6sPC21r1k3gCU-RsKAefag8kjn/view">3M-TurkNet</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/13WB2iD0_-2wTXKQzuH5VfJBNTtkOeK-0/view?usp=sharing">6M-Aşı</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/13ZPHEyz_kqL2QAEQFbBX19DBVA6CoAjE/view?usp=sharing">1M-Meslek</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1FCFS21r81XVUM15mfRiYG9kC5QdtMwJ7/view?usp=sharing">3M-Craftrise</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1dJ6uMyRqZIxNZ9ozF6dDESuaoxYXgi-U/view?usp=sharing">20M-İş Yeri</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1K9QRwfW_auglD1BpRIP7q0dh_lBAm6Fr/view?usp=sharing">20M-SGK</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1hgmF5s6OO-hW6H0pKFSng3L5DpIVAF-x/view?usp=sharing">3M Yabancı</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1juEwo-4jQoGKwbcH8Stc9sqZ5yPlkRpE/view?usp=sharing">8M-İstanbul</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1x8OlCwowDwrRATJJs8lQii96Zy8xGRac/view?usp=sharing">20M-Facebook</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1PEB4h2hXiUcuDmDmLhyp3Xzjh6BLaTAS/view?usp=sharing">25M-EOKUL</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1ZHZPIZEo-cgewe-3_zI5tBESf8a02vTG/view?usp=sharing">5M-EOKUL</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1bmgiE1ZQ4aMQEzDRSSAs9WVfX2Kls4QV/view?usp=sharing">400K-Vesika</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1JEv5p_bMUNPGPMKiiAfXM-6iHwGahvUm/view?usp=sharing">9M-Ak Parti</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1NqCCiXTWN7y0zJs_cjKV4UtMrMOrZ8s_/view?usp=sharing">2M-Kocaeli Tapu</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1hgmF5s6OO-hW6H0pKFSng3L5DpIVAF-x/view?usp=sharing">3M-Yabanci</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/15BYhR0xU9neTFGCPI_-y0HEttdc5wHvm/view?usp=sharing">100K-Üniversite</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1617DX8JBgpk80_6wSOwP7D79fPnuN75a/view?usp=sharing">77K-Üniversite</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1GzJ4us2Kc76QRpfEhI40pBWRmFBNueeK/view?usp=sharing">5M-HGS</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1JCr3AROaOt3Nxfy7_oYyeapUNFS5zoYB/view?usp=sharing">2M-SGK</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1U73OzRx4nlBFTCzZFPYcgZN__iKHLRSz/view?usp=sharing">57K-PLAKA</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1YQTRbCiT7DRz8ocSsWRmT8b-akB2it7P/view?usp=sharing">240K-Ölüm</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1_Us9ti7HUc8gHkrcveO1Os6MXE-RZ3m5/view?usp=sharing">9M-Akbis</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1eblvzTwRfgDwEPn7Bm0MJkNOLbs40Z3N/view?usp=sharing">10K-TürkNet</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1gisHgOssuvrtCy7mONEv3JmDiR3N6id9/view?usp=sharing">60K-Vesika</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1m7LwpmTCKdxZ9ARxhU_untJyEMqOrNtW/view?usp=sharing">2M-AkGençlik</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1o_tlvW3Ub7_gy1kC7E869EjaFb75N3ME/view?usp=sharing">3K-Yök Vesika</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1oxxqUuCQQNGF51pAydLftcPeW-A1V4F-/view?usp=sharing">600K-İnstagram</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1xjZhJhnMcNuYVxoN5dLSAksJI0krZtF5/view?usp=sharing">70K-Papara</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/10cBYrxgOHfuJ_HB63pjq9nQ987NyWSFE/view?usp=sharing">50M-Vatandaş</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1AUx97-Ij0eDJasMce7vokE689-258gLX/view?usp=sharing">180K-Bursa Sicil</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1PBQYnZMs7TzywEVFyk-EpsD8ljiDApie/view?usp=sharing">186K-Seri No</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1fwTaIcKa7qGrbxenTtscwxhoHiMtUCad/view?usp=sharing">313K-İşler Öğretmen</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1nYuq4oLvBPKMUEURuo_HHs_OIIhK3MBE/view?usp=sharing">289K-Vergi</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1o3asYbAsX70KlAfxfLQwTNIQ8-mnx1hW/view?usp=sharing">300K-İys</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1r3ak2bzZ9aVodFTuRBbjmAJuF6A61s6X/view?usp=sharing">178K-Öğretmen</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1z4og5-Ip0TQutEXH0lZ1cX0EzugZ6xdb/view?usp=sharing">800K-Oğrenci</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1LauARf7qfYe8dnjKZtOmbpDC_6G0Ce7v/view?usp=sharing">81M-Us Wireless</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1v2IuPVGvcipn2SLAcXv0fPQfW018RfsM/view?usp=sharing">1K-TurkTelekom</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1cB64DQiXol4DUQwcFJPgEVN2JqKbSN7i/view?usp=sharing">Mobil Mernis</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/10Bh67vZLTgPW7oZ7k7yKkUYRWlNLuT4j/view?usp=sharing">2M-Rusya</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/12aMEJg1LJGepzA6AU4o9w-L3HS9imez0/view?usp=sharing">387K-Discord</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/17VoY87xtb4HmvLodJ-EtQFytr4mGFqFj/view?usp=sharing">Hüdapar</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/19wyKKW6XkjAhyuQq9NUG3OxOtTlC9di4/view?usp=sharing">8K-Teb</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1BRZzYaKbL8eLsp2P85ZK9HWHzwsET1tz/view?usp=sharing">Reeder</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1EInovg_RvErarStsM7ZONRiWKk6nZG6P/view?usp=sharing">5M-Çin Kfc</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1K8uwCCMLGDB2LXGprv6xd1nLwYLPAwEJ/view?usp=sharing">2.5M-Yabanci</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1PJw-vhHWGT2SMw-01w9zL9HNzAskfqB4/view?usp=sharing">100K-Grandbet</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1VH_au5o7BvfBQ6ZjoPO__N8h0BEcoZ6g/view?usp=sharing">5K-HemenBahis</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1Vn5zTdv6S8Ir2SC6Ct19cuR4VSfO4yW0/view?usp=sharing">360K-1xBet</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1XVxrsrgQ7ebFHkMS68_beMeqbkTwXc_e/view?usp=sharing">Eczane</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1etJgiHvw2vs5nn6hiz2Ix7UZwfFEpMi-/view?usp=sharing">10M-Ak Parti</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1ezuSXr5uEkrva0bxvIY4KNxvpnS50cXx/view?usp=sharing">500K-Tuttur</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1gaI10FbTu32oMljxPxTEpEMuys7lmV_O/view?usp=sharing">550K-İnstagram</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1jbw2dDCUS4M6z6BJHsustMQc-Z5KS8zP/view?usp=sharing">77K-Vodafone</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1l8QGnbA4JWWLkT1_Z00TE1YCUW3u-AE0/view?usp=sharing">31K-HepBahis</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1ourpOq3Xc45JINOXpzuJ2yRk9FsTB5BH/view?usp=sharing">54K-Ziraat Bankası</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1zrSp2uJX_lZElVjxUFys6N14Spd8NXDt/view?usp=sharing">Sözcü</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1MGgt3pXWZch_vSDy0dUtrMqusfyZqh1F/view?usp=sharing">57K-Plaka</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/17ZmjzRURaVm2IA02GCM465lTY0EqclcP/view">KFC Data</div>
+        <div class="menu-item" data-link="https://disk.yandex.com.tr/d/8nJI2qKwjOwO2Q/Datalar">Vodafone More+</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1qjzckFQUuRc80yyqdLZmg4uCKw5Tne8i/view">Mernis 22</div>
+        <div class="menu-item" data-link="https://www.kaggle.com/datasets/johntukey/clubhouse-dataset?select=Clubhouse_Dataset_v2.db">Clubhouse Data</div>
+        <div class="menu-item" data-link="https://www.mediafire.com/file/wsc51w1v3muwko8/300k.rar/file">300K-E-Okul</div>
+        <div class="menu-item" data-link="https://mega.nz/file/Xo9FGALJ#xwJODPQH_DP9EaGm8pUurvwn1WKP2H_V5Y6flCRUKT4">Wattpad 23GB</div>
+        <div class="menu-item" data-link="https://cloud.mail.ru/public/7yWg/95nCRJCzu">US Wireless 1.5GB</div>
+        <div class="menu-item" data-link="https://www.mediafire.com/file/o373ltvdk6w4bnw/Epicgames.com_83k.txt/file">83K Epic Games</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1LauARf7qfYe8dnjKZtOmbpDC_6G0Ce7v/view">81M US Wireless</div>
+        <div class="menu-item" data-link="https://dosya.co/cec0j5i9hund/Sql.rar.html">CraftLime</div>
+        <div class="menu-item" data-link="https://dosya.co/n26jtj8es1mm/datalar.rar.html">Data+</div>
+        <div class="menu-item" data-link="https://dosya.co/xx0548bdds64/270_k_id_sxrgu_data.sql.html">270K-Discord</div>
+        <div class="menu-item" data-link="https://dosya.co/qx7sdbo8cun4/600k.rar.html">600K-Discord</div>
+        <div class="menu-item" data-link="https://dosya.co/uezj1cv36xgy/1.5_Milyon_Sgk.sql.html">1.5M-SGK.2</div>
+        <div class="menu-item" data-link="https://dosya.co/zgmdaz7gd8sh/Mail.rar.html">Mail</div>
+        <div class="menu-item" data-link="https://dosya.co/4z9qzszgad2n/Valorant.rar.html">Valorant</div>
+        <div class="menu-item" data-link="https://www.dosyaupload.com/2rFD/Hindistan.zip">Hindistan</div>
+        <div class="menu-item" data-link="https://www.dosyaupload.com/2rFE/israel______________by_nico.sql">İsrail</div>
+        <div class="menu-item" data-link="https://www.dosyaupload.com/2rFI/USA_1M_____________by_nico.sql">USA 1M</div>
+    </div>
+</div>
+
+<!-- Scriptler menüsü -->
+<div class="menu-wrapper" id="menu-scripts-wrapper">
+    <div class="menu" id="menu-scripts">
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1ZMjJOkHYNlahUlHXWRWEJrJv2jCpelJN/view">RelaXServices</div>
+        <div class="menu-item" data-link="https://dosya.co/825wrnlbpfl6/ApoCanV1.rar.html">ApoCan V1</div>
+        <div class="menu-item" data-link="https://dosya.co/onc0b9ttu06x/ApoCanV2.rar.html">ApoCan V2+SQL</div>
+        <div class="menu-item" data-link="https://dosya.co/ab8x5j4svh7g/İsmet_Check.rar.html">İsmet Check</div>
+        <div class="menu-item" data-link="https://dosya.co/3elhkxbrudur/htdocs.rar.html">Flud</div>
+        <div class="menu-item" data-link="https://www.mediafire.com/file/ho98cb3h0uf3j65/lexas-mariel.zip/file">Lexas Mariel</div>
+        <div class="menu-item" data-link="https://dosya.co/qb5mey3xgxpw/Coder-MayfexKatansc_(1).zip.html">Katana/şifre:@rolexr2x</div>
+        <div class="menu-item" data-link="https://dosya.co/s4afgnir00bv/Mariel.zip.html">Mariel V2</div>
+        <div class="menu-item" data-link="https://dosya.co/sggqxhnsaxgu/sssssssssssssssssssssssssssssssssssssssssssssssssss.rar.html">Matrix</div>
+        <div class="menu-item" data-link="https://dosya.co/sqadkzozocr8/asgard_yeni_yedek.rar.html">Asgard/şifre:qwe147asd258</div>
+        <div class="menu-item" data-link="https://dosya.co/7p38kxiboidh/htdocs.rar.html">Earl</div>
+        <div class="menu-item" data-link="https://dosya.co/w826hyd7vuc9/wrotexars.rar.html">Wrotex sql'siz</div>
+        <div class="menu-item" data-link="https://dosya.co/mye8nc0wdpeh/Norlax_altyapi.rar.html">Norlax</div>
+        <div class="menu-item" data-link="https://dosya.co/h8b12dnm2qai/siberciyiz-lroxy.rar.html">Lroxy Siberciyiz</div>
+        <div class="menu-item" data-link="https://www.mediafire.com/file/zpbajtxlr67d33p/htdocs+4.rar/file">Janti</div>
+        <div class="menu-item" data-link="https://dosya.co/83dwhnuqnncc/mariel_sc.zip.html">Mariel V3</div>
+        <div class="menu-item" data-link="https://dosya.co/hauk4dlots4c/htdocs.rar.html">JackalMedya</div>
+        <div class="menu-item" data-link="https://dosya.co/kmgjjeudanfv/script.rar.html">Wioland</div>
+        <div class="menu-item" data-link="https://dosya.co/z9ii677ck8ul/theosleakbyneujx.rar.html">Theos/şifre:neujx</div>
+        <div class="menu-item" data-link="https://dosya.co/532xxdi98i7u/htdocs.zip.html">Maskot</div>
+        <div class="menu-item" data-link="https://disk.yandex.com.tr/d/3LPuQkb4Iaj7EA">1973</div>
+        <div class="menu-item" data-link="https://www.mediafire.com/file/pkdcim9u6m51wn9/Downloads.rar/file">Sc V2</div>
+        <div class="menu-item" data-link="https://dosya.co/f2745zkhj84l/grexproscript.zip.html">GrexPro</div>
+        <div class="menu-item" data-link="https://dosya.co/ijp0vigxx296/filnecati.ZIP.html">Aquaman</div>
+        <div class="menu-item" data-link="https://disk.yandex.com.tr/d/s6wlDJA0rqWc5A">Sc V3</div>
+        <div class="menu-item" data-link="https://dosya.co/zx0twz3limwv/htdocs.rar.html">Sc V4</div>
+        <div class="menu-item" data-link="https://dosya.co/l65l7ai9761s/p4nel_script.rar.html">Sc V5</div>
+        <div class="menu-item" data-link="https://dosya.co/s2k4t7mhilzr/zindan-panel-sc.zip.html">Zindan Panel</div>
+        <div class="menu-item" data-link="https://dosya.co/a7zc7eeekzpg/htdocs.rar.html">Penta Sorgu</div>
+        <div class="menu-item" data-link="https://dosya.co/diil01gjddnz/ezik_script.zip.html">Ezik Script</div>
+        <div class="menu-item" data-link="https://dosya.co/rktbixgxo6ul/Kerelin_Checker_G%C3%BCncel_Script.rar.html">Kerelin</div>
+        <div class="menu-item" data-link="https://dosya.co/egslzn2t9lkg/htdocs.zip.html">Ornhell</div>
+        <div class="menu-item" data-link="https://dosya.co/cc7v100ta64x/Rezidans_Script.zip.html">Rezidans</div>
+        <div class="menu-item" data-link="https://dosya.co/syrpeeec8cr3/WROXY_FULL_AP%C4%B0L%C4%B0_SC_VES%C4%B0KAL%C4%B0.zip.html">Wroxy</div>
+        <div class="menu-item" data-link="https://dosya.co/85s4rjcpgm06/Panel.rar.html">Sc V6</div>
+        <div class="menu-item" data-link="https://dosya.co/71n5cfovprkx/tavsancik_marlex_editli_sc.rar.html">Tavsancik Marlex</div>
+        <div class="menu-item" data-link="https://dosya.co/a7zc7eeekzpg/htdocs.rar.html">JustHack</div>
+        <div class="menu-item" data-link="https://dosya.co/mk0p29d6992l/YakuzaCheck_Sorgu_Paneli_2.0.rar.html">Yakuza Check</div>
+        <div class="menu-item" data-link="https://dosya.co/wgmhixaa8b12/ZohakYedek_EN_SON_S%C3%9CR%C3%9CM.rar.html">Zohak</div>
+        <div class="menu-item" data-link="https://dosya.co/saxci023vjt7/Logosuzlar_Sorunsuz_Panel_Sc.rar.html">Logosuzlar</div>
+        <div class="menu-item" data-link="https://dosya.co/g74dd3l39k9x/1.06.2025_script.rar.html">Zephyr</div>
+        <div class="menu-item" data-link="https://dosya.co/foffell896lf/p4nel_script.rar.html">Kronik</div>
+    </div>
+</div>
+
+<!-- Tools menüsü -->
+<div class="menu-wrapper" id="menu-tools-wrapper">
+    <div class="menu" id="menu-tools">
+        <div class="menu-item" data-link="https://stresser.ba/">DDoS Web</div>
+        <div class="menu-item" data-link="https://dosya.co/hc1w9ez97d5f/Sorgu_Panel.rar.html">Sorgu Panel Tool</div>
+        <div class="menu-item" data-link="https://dosya.co/htpisxjmn7k8/Numara_Sorgu.rar.html">Numara Sorgu Tool</div>
+        <div class="menu-item" data-link="https://dosya.co/qhu6lir6df6g/Facebook_Sorgu.rar.html">Facebook Sorgu Tool</div>
+        <div class="menu-item" data-link="https://dosya.co/n8n3x9ytq1ql/E-Okul_Sorgu.rar.html">E-Okul Sorgu Tool</div>
+        <div class="menu-item" data-link="https://dosya.co/mrsw3ngnwlts/CraftriseSorgu.rar.html">CraftRise Sorgu Tool</div>
+        <div class="menu-item" data-link="https://dosya.co/jxoboviwa2us/AdresTool.rar.html">Adres Sorgu Tool</div>
+        <div class="menu-item" data-link="https://dosya.co/ai36ff4251t0/SmsBomber.rar.html">SMS-Bomber Tool</div>
+        <div class="menu-item" data-link="https://dosya.co/m17dd2h3fokf/%C4%B0%C5%9F_G%C3%B6r%C3%BCr_Tool.rar.html">DC+OSINT Tools</div>
+        <div class="menu-item" data-link="https://dosya.co/rri4j739jfzu/Checker.rar.html">Checker Tool</div>
+        <div class="menu-item" data-link="https://dosya.co/5d33zahc9cii/DDoS.rar.html">DDoS Tool</div>
+        <div class="menu-item" data-link="https://github.com/JohnTwentyTwo/Valorant-Checker-Fullcapture/tree/main">Valorant Checker Tool</div>
+        <div class="menu-item" data-link="https://github.com/sherlock-project/sherlock">Sherlock Tool</div>
+        <div class="menu-item" data-link="https://github.com/mrprogrammer2938/Black-Tool">Black Tool</div>
+        <div class="menu-item" data-link="https://github.com/theahmadov/dash">Dash Tool</div>
+        <div class="menu-item" data-link="https://github.com/toxy4ny/kaplan">Kaplan Tool</div>
+        <div class="menu-item" data-link="https://github.com/acnsoft/TELAMON">Telamon Tool</div>
+        <div class="menu-item" data-link="https://github.com/sqlmapproject/sqlmap">SqlMap Tool</div>
+        <div class="menu-item" data-link="https://github.com/scrapy/scrapy">Scrapper Tool</div>
+        <div class="menu-item" data-link="https://github.com/Yozoxir/TraceEye">TraceEye MultiTool</div>
+        <div class="menu-item" data-link="https://github.com/SHREK-TM/Shrek-Tools">Shrek MultiTool</div>
+        <div class="menu-item" data-link="https://github.com/alextoutcourt72/ClarityCLI">Clarity MultiTool</div>
+        <div class="menu-item" data-link="https://github.com/DAWA0/Dawa-Multitools">Dawa MultiTool</div>
+        <div class="menu-item" data-link="https://github.com/HzzH-Tools/CopyDiscordServer">Discord Copier</div>
+        <div class="menu-item" data-link="https://github.com/v4lkyr0/Buildware-Tool">V4lkyr0 BuildwareTool</div>
+        <div class="menu-item" data-link="https://github.com/Anonyme-00152/Crimson-Wolf">CrimsonWolf Tool</div>
+        <div class="menu-item" data-link="https://github.com/0xtoolsmega/0x-multitool">Mega MultiTool</div>
+        <div class="menu-item" data-link="https://github.com/sluroq/slur-tool">Slur MultiTool</div>
+    </div>
+</div>
+
+<!-- Hack Arşivleri menüsü -->
+<div class="menu-wrapper" id="menu-hackarsiv-wrapper">
+    <div class="menu" id="menu-hackarsiv">
+        <div class="menu-item" data-link="https://dosya.co/s4rqofkoojjs/Relax.txt.html">DevRelax Archive</div>
+        <div class="menu-item" data-link="https://drive.google.com/file/d/1HW1FOjb4CwTUW5c0Komrdv_x5aRnQHxT/view?usp=sharing">Atıl Samancıoğlu Archive</div>
+        <div class="menu-item" data-link="https://dosya.co/vc76evrnudho/HACK_AR%C5%9E%C4%B0V%C4%B0.rar.html">Winson Archive</div>
+        <div class="menu-item" data-link="https://dosya.co/qlv8o6gmpave/Toska_Official_Hack_Ar%C5%9Fivi_v2.zip.html">Toska Arcihve</div>
+        <div class="menu-item" data-link="https://dosya.co/pk0zymf2ejtw/Hack_Ar%C5%9Fivi_1.rar.html">Lynx Archive</div>
+        <div class="menu-item" data-link="https://dosya.co/pnrpyucodpdq/tosko_hack_ar%C5%9Fivi.zip.html">Toska V2 Archive</div>
+        <div class="menu-item" data-link="https://dosya.co/82nial9tu9m0/THT_%C3%B6zel_hack_ar%C5%9Fivi_2023.rar.html">THT Archive</div>
+        <div class="menu-item" data-link="https://dosya.co/c2sxhfhfruhq/HACK_AR%C5%9E%C4%B0V%C4%B0.zip.html">DragonHackerz Archive</div>
+        <div class="menu-item" data-link="https://dosya.co/05fzebxp7g4q/Yeni_Ba%C5%9Flayanlar_%C4%B0%C3%A7in_K%C3%BC%C3%A7%C3%BCk_Hack_Ar%C5%9Fivi.rar.html">Can Archive</div>
+        <div class="menu-item" data-link="https://dosya.co/r3qucotysx3s/Kaliteli_Dev_Hack_Arsivi.txt.html">Styy Archive</div>
+        <div class="menu-item" data-link="https://dosya.co/p3xihe0ydc0v/K4RDAN4DAM.hack.mini.archive-lvl1.rar.html">K4rdan4dam Archive</div>
+        <div class="menu-item" data-link="https://justpaste.it/aevarsiv4">PC Archive</div>
+        <div class="menu-item" data-link="https://justpaste.it/aevarsiv5">RedHat Archive</div>
+        <div class="menu-item" data-link="https://justpaste.it/aevarsiv8">SerZ Archive</div>
+        <div class="menu-item" data-link="https://justpaste.it/aevarsiv9">Aev Archive</div>
+        <div class="menu-item" data-link="https://justpaste.it/aevarsiv10">Delta Archive</div>
+        <div class="menu-item" data-link="https://justpaste.it/aevarsiv11">TheAnon Archive</div>
+        <div class="menu-item" data-link="https://justpaste.it/aevarsiv12">RedKit Archive</div>
+        <div class="menu-item" data-link="https://justpaste.it/aevarsiv13">AevV2 Archive</div>
+        <div class="menu-item" data-link="https://justpaste.it/aevarsiv1">GokTuran Archive</div>
+        <div class="menu-item" data-link="https://justpaste.it/aev-arsiv">150+ Adet Archive</div>
+    </div>
+</div>
+
+<!-- Rat Programs menüsü -->
+<div class="menu-wrapper" id="menu-programs-wrapper">
+    <div class="menu" id="menu-programs">
+        <div class="menu-item" data-link="https://dosya.co/vhteke7vjq96/Craxs_RAT_V7.4.rar.html">Craxs RAT V7.4</div>
+        <div class="menu-item" data-link="https://dosya.co/1cd52hvy04fy/DARKCOMET_RAT_5.1.1.rar.html">DarkComet RAT V5.1.1</div>
+        <div class="menu-item" data-link="https://dosya.co/nwayaw1p1wop/Venom_RAT_v6.0.3.rar.html">Venom RAT V6.0.3</div>
+        <div class="menu-item" data-link="https://dosya.co/x9e2jpdjii1g/G-700-RAT-Cracked.rar.html">G700 RAT</div>
+        <div class="menu-item" data-link="https://dosya.co/x9e2jpdjii1g/G-700-RAT-Cracked.rar.html">G700 RAT V6.4.0</div>
+        <div class="menu-item" data-link="https://dosya.co/pg66jlyysrs8/Async_RAT_v0.5.8_T%C3%BCrk%C3%A7e_Versiyon.rar.html">ASYNC RAT V0.5.8</div>
+        <div class="menu-item" data-link="https://dosya.co/6t3ge9xfqhkj/Quasar.v1.4.1.zip.html">Quasar RAT V1.4.1</div>
+        <div class="menu-item" data-link="https://dosya.co/m5emjz732oeh/SpyGate_RAT_(+SOURCE).rar.html">SpyGate RAT</div>
+        <div class="menu-item" data-link="https://dosya.co/1udm4thwgb8e/EagleSpy_v4_Android_RAT_[_Spyroid_Vip_].rar.html">EagleSpy AndroRAT V4</div>
+        <div class="menu-item" data-link="https://dosya.co/l180kz9h2g48/njRAT-0.7d-Horror-Edition-main.zip.html">njRAT V0.7</div>
+        <div class="menu-item" data-link="https://dosya.co/tieawwmz9gmu/Remcos-v7.1.0-Pro.zip.html">Remcos RAT V7.1.0</div>
+        <div class="menu-item" data-link="https://dosya.co/vqk2m8u77jnx/XWorm_V7.2_Cracked_By_@Drcrypt0r.rar.html">XWorm RAT V7.2</div>
+        <div class="menu-item" data-link="https://dosya.co/vpd8kah5qo6m/2_Darktrack_Rat-20260118T124411Z-3-001.zip.html">Darktrack RAT</div>
+        <div class="menu-item" data-link="https://dosya.co/rz3exsa5r9ff/3_Ozone_Rat-20260118T124432Z-3-001.zip.html">Ozone RAT</div>
+        <div class="menu-item" data-link="https://dosya.co/f4rkd37t2jm1/4_Nanocore_Rat-20260118T124459Z-3-001.zip.html">Nanocore RAT</div>
+        <div class="menu-item" data-link="https://dosya.co/rwfof4c0qf6d/5_Luminosity_Link-20260118T124804Z-3-001.zip.html">Luminosity RAT</div>
+        <div class="menu-item" data-link="https://dosya.co/wmuz11ftyy9f/6_Imminent_Monitor-20260118T124822Z-3-001.zip.html">Imminent Monitor</div>
+        <div class="menu-item" data-link="https://dosya.co/mpxu3mhxao7p/AndroRAT.rar.html">AndroRAT</div>
+        <div class="menu-item" data-link="https://dosya.co/08pladxh2235/Babylon_Rat.rar.html">Babylon RAT</div>
+        <div class="menu-item" data-link="https://dosya.co/qvrfpg2b1yah/ctOs_Rat.rar.html">ct0s RAT</div>
+        <div class="menu-item" data-link="https://dosya.co/9wg7n968jvea/Diamond_Rat.rar.html">Diamon RAT</div>
+        <div class="menu-item" data-link="https://dosya.co/drg7ydk6vsah/DroidJack.rar.html">DroidJack RAT</div>
+        <div class="menu-item" data-link="https://dosya.co/0ryuk6o2tso6/Hakops_Rat.rar.html">Hakops RAT</div>
+        <div class="menu-item" data-link="https://dosya.co/iq63eutqymk9/Harmmy_Rat.rar.html">Harmmy RAT</div>
+        <div class="menu-item" data-link="https://dosya.co/g9hrwn41opbh/NJ_RAT_TRAVEL.rar.html">NJ RAT</div>
+        <div class="menu-item" data-link="https://dosya.co/g26o69oaxmke/Quasher_Rat.rar.html">Quasher RAT</div>
+        <div class="menu-item" data-link="https://dosya.co/nyhc14baerw7/Spoynote_Rat.rar.html">Spoynote RAT</div>
+        <div class="menu-item" data-link="https://dosya.co/iek3pyz55aqn/Vantom_Rat.rar.html">Vantom RAT</div>
+    </div>
+</div>
+
+<!-- Logs menüsü -->
+<div class="menu-wrapper" id="menu-logs-wrapper">
+    <div class="menu" id="menu-logs">
+        <div class="menu-item" data-link="https://www.dosyaupload.com/21Eu/1.4GB_LOGS.rar">1.5GB LOG</div>
+        <div class="menu-item" data-link="https://www.dosyaupload.com/21Ev/1.5M-LOGİN_DATA_______________by_nico.sql">1.5-MİLLİON LOG</div>
+        <div class="menu-item" data-link="https://www.dosyaupload.com/21Ew/1.7MİLLİON_by_nico.sql">1.7-MİLLİON LOG</div>
+        <div class="menu-item" data-link="https://www.dosyaupload.com/21Ex/1.8M_Roblox.sql">1.8-MİLLİON ROBLOX</div>
+        <div class="menu-item" data-link="https://www.dosyaupload.com/21Ey/1.28_Million_Netflix_____________by_nico.sql">1.28-MİLLİON NETFLİX</div>
+        <div class="menu-item" data-link="https://www.dosyaupload.com/21Ez/2.3M_gmail_____by_nico.sql">2.3-MİLLİON GMAİL</div>
+        <div class="menu-item" data-link="https://dosya.co/f40x90d9nt2y/4milyon_logs.txt.html">4-MİLLİON LOG</div>
+        <div class="menu-item" data-link="https://www.dosyaupload.com/2rFu/10MİLLİON_by_nico.sql">10-MİLLİON LOG</div>
+        <div class="menu-item" data-link="https://www.dosyaupload.com/2rFv/11MİLLİON_by_nico.sql">11-MİLLİON LOG</div>
+        <div class="menu-item" data-link="https://www.dosyaupload.com/2rFw/14_MİLLİON_by_nico.sql">14-MİLLİON LOG</div>
+        <div class="menu-item" data-link="https://www.dosyaupload.com/2rFx/22MİLLİON_by_nico.sql">22-MİLLİON LOG</div>
+        <div class="menu-item" data-link="https://gofile.io/d/HIoL0O">187-MİLLİON LOG</div>
+        <div class="menu-item" data-link="https://www.dosyaupload.com/2rFy/25_MİLYON_KULLANICI_ADI_ŞİFRE.rar">25-MİLLİON LOG</div>
+        <div class="menu-item" data-link="https://mega.nz/file/4AVSUZZK#dLYIw7gRT0HLpkkYw8LEqyAx6h_CbeyjVw-lwtj-agg">23GB LOG</div>
+        <div class="menu-item" data-link="https://www.dosyaupload.com/2rFz/Alten_______________by_nico.sql">Alten LOG</div>
+        <div class="menu-item" data-link="https://www.dosyaupload.com/2rFB/coinbase_by_nico.sql">Coinbase LOG</div>
+        <div class="menu-item" data-link="https://www.dosyaupload.com/2rFC/DİSCORD_15_PART_DATA.rar">Discord 15PART LOG</div>
+        <div class="menu-item" data-link="https://www.dosyaupload.com/2rFF/logs_[9.6M]______by_nico.sql">9.6-MİLLİON LOG</div>
+        <div class="menu-item" data-link="https://www.dosyaupload.com/2rFG/logs_[12.9M]_____by_nico.sql">12.9-MİLLİON LOG</div>
+    </div>
+</div>
+
+<!-- Phishing menüsü -->
+<div class="menu-wrapper" id="menu-phishing-wrapper">
+    <div class="menu" id="menu-phishing">
+        <div class="menu-item" data-link="https://dosya.co/cx8paibkygal/superbetin.rar.html">Süper Betin Bet Script</div>
+        <div class="menu-item" data-link="https://dosya.co/7n52opjdb5n8/superbahis.rar.html">Süper Bahis Bet Script</div>
+        <div class="menu-item" data-link="https://dosya.co/j1ha2kudq2iv/piabet.zip.html">Pia Bet Script</div>
+        <div class="menu-item" data-link="https://dosya.co/v6ntj9hssjes/nakitbahis.rar.html">Nakit Bahis Bet Script</div>
+        <div class="menu-item" data-link="https://dosya.co/epnca1ydjw1v/mobilbahis.zip.html">Mobil Bahis Bet Script</div>
+        <div class="menu-item" data-link="https://dosya.co/l9zc3v59usje/jojo.rar.html">JoJo Bahis Bet Script</div>
+        <div class="menu-item" data-link="https://dosya.co/7a5b7dho0qbb/extrabet.rar.html">Extra Bet Script</div>
+        <div class="menu-item" data-link="https://dosya.co/n84au7r4c3lw/betwinner.rar.html">Bet Winner Script</div>
+        <div class="menu-item" data-link="https://dosya.co/i0eug2ip1dxe/İnstagram.rar.html">İnstagram Phishing Script</div>
+        <div class="menu-item" data-link="https://dosya.co/vv6aibizq3sc/%C4%B0nstagram_Fake_Script_Hesap_%C3%87alma.rar.html">İnstagram v2 Script</div>
+        <div class="menu-item" data-link="https://dosya.co/z2trlez73p2n/instagram_takip_script.txt.html">İnstagram Takip Script</div>
+        <div class="menu-item" data-link="https://dosya.co/ojy8bat36p4j/%C4%B0nstagram_Phishing_Script_v2.rar.html">İnstagram v3</div>
+        <div class="menu-item" data-link="https://dosya.co/veu8ziy6tl8k/Instagram_telif_Scripti_New_Script_Pp_%C3%A7eker.zip.html">İnstagram Telif Script</div>
+        <div class="menu-item" data-link="https://dosya.co/375nl5asxi9j/Ebay.rar.html">Ebay Script</div>
+        <div class="menu-item" data-link="https://dosya.co/tckp6j861g7o/Adobe.rar.html">Adobe</div>
+        <div class="menu-item" data-link="https://dosya.co/frjkjxkieue4/Badoo.rar.html">Badoo</div>
+        <div class="menu-item" data-link="https://dosya.co/zfjnw2wz04yq/Crypto_coin.rar.html">Crypto Coin</div>
+        <div class="menu-item" data-link="https://dosya.co/fwzy85f57uf6/Divantart.rar.html">Divantart</div>
+        <div class="menu-item" data-link="https://dosya.co/7pps50imfl3x/Drop_Box.rar.html">Drop Box</div>
+        <div class="menu-item" data-link="https://dosya.co/1kljqop0hinh/Facebook.rar.html">Facebook</div>
+        <div class="menu-item" data-link="https://dosya.co/sltd427axmoh/FB_Advanced.rar.html">FB Advanced</div>
+        <div class="menu-item" data-link="https://dosya.co/j0jhwneahlu6/FB_Messenger.rar.html">FB Messenger</div>
+        <div class="menu-item" data-link="https://dosya.co/1nw8ohuju4se/FB_Security.rar.html">FB Security</div>
+        <div class="menu-item" data-link="https://dosya.co/we3ngk1h9z1u/Github.rar.html">GitHub</div>
+        <div class="menu-item" data-link="https://dosya.co/k6yp9l0v45po/Google.rar.html">Google</div>
+        <div class="menu-item" data-link="https://dosya.co/yx6axcmemqbl/Google_New.rar.html">Google New</div>
+        <div class="menu-item" data-link="https://dosya.co/9q5zwigup5z3/Google_Poll.rar.html">Google Poll</div>
+        <div class="menu-item" data-link="https://dosya.co/mdb6ydxn2amw/İG_Followers.rar.html">İG Followers</div>
+        <div class="menu-item" data-link="https://dosya.co/rv66i46gqjsg/İG_Verify.rar.html">İG Verify</div>
+        <div class="menu-item" data-link="https://dosya.co/zn8bal1x44d5/İnstagram_V4.rar.html">İnstagram v4</div>
+        <div class="menu-item" data-link="https://dosya.co/ewuq6qy0swim/ip.rar.html">İP Script</div>
+        <div class="menu-item" data-link="https://dosya.co/lj3lipcxb0zi/Linkedin.rar.html">Linkedin</div>
+        <div class="menu-item" data-link="https://dosya.co/8uu00v2cndgs/Microsoft.rar.html">Microsoft</div>
+        <div class="menu-item" data-link="https://dosya.co/ux6rb07acohj/Netflix.rar.html">Netflix</div>
+        <div class="menu-item" data-link="https://dosya.co/6hsg61jme52j/Origin.rar.html">Origin</div>
+        <div class="menu-item" data-link="https://dosya.co/m0p8xcc68wxe/Paypal.rar.html">Paypal</div>
+        <div class="menu-item" data-link="https://dosya.co/01mfsl5wfos3/Pinterest.rar.html">Pinterest</div>
+        <div class="menu-item" data-link="https://dosya.co/24p7yv96zxxj/Playstation.rar.html">Playstation</div>
+        <div class="menu-item" data-link="https://dosya.co/4tv7jlxxati0/Proton_Mail.rar.html">Proton Mail</div>
+        <div class="menu-item" data-link="https://dosya.co/9cdr7cionwed/Reddit.rar.html">Reddit</div>
+        <div class="menu-item" data-link="https://dosya.co/3dyk7l6otqi2/Snapchat.rar.html">Snapchat</div>
+        <div class="menu-item" data-link="https://dosya.co/k7sjv0bdkz4j/Spotify.rar.html">Spotify</div>
+        <div class="menu-item" data-link="https://dosya.co/nlar794qbhn5/Stackoverflow.rar.html">Stackoverflow</div>
+        <div class="menu-item" data-link="https://dosya.co/qye20l1ge9yu/Steam.rar.html">Steam</div>
+        <div class="menu-item" data-link="https://dosya.co/wjq79yrbs4xl/Twitch.rar.html">Twitch</div>
+        <div class="menu-item" data-link="https://dosya.co/df30w073r24p/Twitter.rar.html">Twitter v3</div>
+        <div class="menu-item" data-link="https://dosya.co/yxoxs7ua4lnw/Vk.rar.html">VK</div>
+        <div class="menu-item" data-link="https://dosya.co/164lr2qfofa9/VK_Poll.rar.html">VK Poll</div>
+        <div class="menu-item" data-link="https://dosya.co/z07f6bupfnc1/Wordpress.rar.html">Wordpress</div>
+        <div class="menu-item" data-link="https://dosya.co/wd5plgqoiqlj/xBox.rar.html">xBox</div>
+        <div class="menu-item" data-link="https://dosya.co/wngaz9wtpiyo/Yahoo.rar.html">Yahoo</div>
+        <div class="menu-item" data-link="https://dosya.co/c489dfudej7r/Yandex.rar.html">Yandex</div>
+        <div class="menu-item" data-link="https://dosya.co/i03wczjms7z4/7_Temalı_SMM.rar.html">7 Temalı SMM</div>
+        <div class="menu-item" data-link="https://dosya.co/s4deh5di131x/Ajans___Firma.rar.html">Ajans Firma</div>
+        <div class="menu-item" data-link="https://dosya.co/8nlmrhuqp7pu/ak4y-advancedFishing.rar.html">Advanced Fishing</div>
+        <div class="menu-item" data-link="https://dosya.co/xvs90ukh6hup/Bizim_Oyun.rar.html">Bizim Oyun</div>
+        <div class="menu-item" data-link="https://dosya.co/1dknj0y1roek/Ciftlik.rar.html">Çiftlik</div>
+        <div class="menu-item" data-link="https://dosya.co/e1yuq5pj1dax/Clash_Of_Clans_Faka_Hile_Script.rar.html">Clash Of Clans Hack</div>
+        <div class="menu-item" data-link="https://dosya.co/x8ipstm7ulrc/Clash_Royale.rar.html">Clash Royale</div>
+        <div class="menu-item" data-link="https://dosya.co/2d7vvqx068tq/Cs_Duragı.rar.html">Cs Durağı</div>
+        <div class="menu-item" data-link="https://dosya.co/2j6y0bod12ee/Dental.rar.html">Dental</div>
+        <div class="menu-item" data-link="https://dosya.co/t5bpty5gsaxk/Dosya_TC.rar.html">Dosya TC</div>
+        <div class="menu-item" data-link="https://dosya.co/gv728ioc3owm/eBay_V2.rar.html">eBay V2</div>
+        <div class="menu-item" data-link="https://dosya.co/408jbtfvq3f6/Egitimhane.rar.html">Eğitimhane</div>
+        <div class="menu-item" data-link="https://dosya.co/cy7lh28yukek/Facebook_Telif.rar.html">Facebook Telif V2</div>
+        <div class="menu-item" data-link="https://dosya.co/ir4jg8z3se6g/Facebook_V4.rar.html">Facebook V4</div>
+        <div class="menu-item" data-link="https://dosya.co/wtzjrgja11sw/Flixapp.rar.html">Flixapp</div>
+        <div class="menu-item" data-link="https://dosya.co/c0jqlw9dxbnz/Futbol_Menejerlik.rar.html">Futbol Menejerlik</div>
+        <div class="menu-item" data-link="https://dosya.co/88nns8t89thk/Garanti_BBVA.rar.html">Garanti BBVA</div>
+        <div class="menu-item" data-link="https://dosya.co/r7dhgsu9f6r1/Gmail_V2.rar.html">Gmail V2</div>
+        <div class="menu-item" data-link="https://dosya.co/na13w29wg5mv/Gmail_V3.rar.html">Gmail V3</div>
+        <div class="menu-item" data-link="https://dosya.co/wqtc005nly7w/Güzellik_Salonu.rar.html">Güzellik Salonu</div>
+        <div class="menu-item" data-link="https://dosya.co/57nl8p45fvvb/Halk_Bank.rar.html">Halk Bank</div>
+        <div class="menu-item" data-link="https://dosya.co/s55ilt88g2w7/Hostinger.rar.html">Hostinger</div>
+        <div class="menu-item" data-link="https://dosya.co/mg2jtnbkl31v/Hotel.rar.html">Hotel</div>
+        <div class="menu-item" data-link="https://dosya.co/bxk9he3ccm00/Hukuk.rar.html">Hukuk</div>
+        <div class="menu-item" data-link="https://dosya.co/fp4nzgipxak6/Insaat_Mimarlik.rar.html">Mimarlık</div>
+        <div class="menu-item" data-link="https://dosya.co/kihpf5r5im0i/İnstagram_Gelişmiş_V6.rar.html">İnstagram Gelişmiş V6</div>
+        <div class="menu-item" data-link="https://dosya.co/eaylxmki2f7a/İnstagram_Takip_V5.rar.html">İnstagram Takip V5</div>
+        <div class="menu-item" data-link="https://dosya.co/spkiv6qvf5q2/İnstagram_Telif_V4.rar.html">İnstagram Telif V4</div>
+        <div class="menu-item" data-link="https://dosya.co/f3dk14f4qibw/İnstagram_V7.rar.html">İnstagram V7</div>
+        <div class="menu-item" data-link="https://dosya.co/t9uwwszvr9ox/İnstagram_V8.rar.html">İnstagram V8</div>
+        <div class="menu-item" data-link="https://dosya.co/3wal6aqwmlkn/İnstagram_V9.rar.html">İnstagram V9</div>
+        <div class="menu-item" data-link="https://dosya.co/9qq1lei5f6je/İsbank_Banka_Script.rar.html">İş Bank Script</div>
+        <div class="menu-item" data-link="https://dosya.co/gric1bvnl22l/İskele_Senior.rar.html">İskele</div>
+        <div class="menu-item" data-link="https://dosya.co/ibrnfmevkzd9/iWatch.rar.html">iWatch</div>
+        <div class="menu-item" data-link="https://dosya.co/9ufnte9vcvra/Kişisel_Site_.rar.html">Kişisel Site</div>
+        <div class="menu-item" data-link="https://dosya.co/lgygh5i9k3ah/Kişisel_V2.rar.html">Kişisel V2</div>
+        <div class="menu-item" data-link="https://dosya.co/b8m4v3zd4vsc/Kurumsal_Firma.rar.html">Kurumsal Firma</div>
+        <div class="menu-item" data-link="https://dosya.co/yttrj5d8t952/Kuveyt_Bank.rar.html">Kuveyt Bank</div>
+        <div class="menu-item" data-link="https://dosya.co/txjmnzcrch0e/Link.tl.rar.html">Link TL</div>
+        <div class="menu-item" data-link="https://dosya.co/z8meehkxjnrt/Linkedln.rar.html">Linkedln</div>
+        <div class="menu-item" data-link="https://dosya.co/4baf8cmgrvaw/Metin_2_V2.rar.html">Metin 2 V2</div>
+        <div class="menu-item" data-link="https://dosya.co/qorlq8nfohxk/Metin_2.rar.html">Metin 2</div>
+        <div class="menu-item" data-link="https://dosya.co/kpw5cf9lc8xb/Minecraft.rar.html">Minecraft</div>
+        <div class="menu-item" data-link="https://dosya.co/h0ies0uabxt5/Nakliyat_V3.0.rar.html">Nakliyat V3.O</div>
+        <div class="menu-item" data-link="https://dosya.co/riefx6i9juhj/Nakliye_V2.rar.html">Nakliye V2</div>
+        <div class="menu-item" data-link="https://dosya.co/s7oxt17m7lmt/Netflix_V2.rar.html">Netflix V2</div>
+        <div class="menu-item" data-link="https://dosya.co/lrt52sb05eup/Next_Hour.rar.html">Next Hour</div>
+        <div class="menu-item" data-link="https://dosya.co/ul45woihxzr0/Organik_Ürün.rar.html">Organik Ürün</div>
+        <div class="menu-item" data-link="https://dosya.co/bixkyjpdjo1g/Outlook.rar.html">Outlook</div>
+        <div class="menu-item" data-link="https://dosya.co/25kd8617vom7/Oxoo.rar.html">Oxoo</div>
+        <div class="menu-item" data-link="https://dosya.co/mpvjifr24290/Papara_V2.rar.html">Papara V2</div>
+        <div class="menu-item" data-link="https://dosya.co/6duv9k22qjm6/Papara.rar.html">Papara</div>
+        <div class="menu-item" data-link="https://dosya.co/hz4y619jugyp/ptt.zip.html">PTT</div>
+        <div class="menu-item" data-link="https://dosya.co/31h53lybv2pb/publichtml.rar.html">Public V1</div>
+        <div class="menu-item" data-link="https://dosya.co/f4664zz2mjx9/senior_özel_motel.rar.html">Motel</div>
+        <div class="menu-item" data-link="https://dosya.co/q5o0tafps1ih/ShiftDelete.rar.html">ShiftDelete</div>
+        <div class="menu-item" data-link="https://dosya.co/v04fifbwfqv4/Sitesiz_DM.rar.html">Sitesiz DM</div>
+        <div class="menu-item" data-link="https://dosya.co/hzg0zj47tt1g/SMM_Panel.rar.html">SMM Panel</div>
+        <div class="menu-item" data-link="https://dosya.co/odujcnbdb6uw/Social_Clup.rar.html">Social Clup</div>
+        <div class="menu-item" data-link="https://dosya.co/rz9wcfaeyp3v/SocialBlade.rar.html">Social Blade</div>
+        <div class="menu-item" data-link="https://dosya.co/g0egkgrbv30v/Sorunsuz.rar.html">Sorunsuz</div>
+        <div class="menu-item" data-link="https://dosya.co/uf75oe3gcwl9/Sözlük_V2.rar.html">Sözlük</div>
+        <div class="menu-item" data-link="https://dosya.co/3i94gmvvatfi/Steam_V2.rar.html">Steam V2</div>
+        <div class="menu-item" data-link="https://dosya.co/ymnqp76ekmas/Zula.rar.html">Zula</div>
+        <div class="menu-item" data-link="https://dosya.co/y8tkn3ngpx0m/Zula_Hack.rar.html">Zula Hack</div>
+        <div class="menu-item" data-link="https://dosya.co/800l9ojr7gxm/Ziraat.rar.html">Ziraat</div>
+        <div class="menu-item" data-link="https://dosya.co/7fw9lsmh2iz7/YTTakip.rar.html">YTTakip</div>
+        <div class="menu-item" data-link="https://dosya.co/dv6lrnst9ayj/Yap.rar.html">YAP</div>
+        <div class="menu-item" data-link="https://dosya.co/e58upuqx5p4x/Yandex_V2.rar.html">Yandex V2</div>
+        <div class="menu-item" data-link="https://dosya.co/aa7b1isusmj9/WOREXUS.rar.html">Worexus</div>
+        <div class="menu-item" data-link="https://dosya.co/2y69lh27jqwn/v3.rar.html">V3</div>
+        <div class="menu-item" data-link="https://dosya.co/dp6v68nq56kx/Temizlik.rar.html">Temizlik</div>
+        <div class="menu-item" data-link="https://dosya.co/fl0vqs2c2omh/Temizlik_V2.zip.html">Temizlik V2</div>
+        <div class="menu-item" data-link="https://dosya.co/5ttsxz0y75dy/Taksi.rar.html">Taksi</div>
+    </div>
+</div>
+
+<!-- Müzik elementi - OTOMATİK BAŞLAYACAK -->
+<audio id="background-music" loop="" style="display: none;">
+    <source src="https://cdn.discordapp.com/attachments/1442128023699587112/1464182836696317992/Wegh_-_Ulubatl_Hasan___Ben_ilimem_sana_arap_atlar_Bass___2Ksm_-_Kopya.mp3?ex=69748a07&amp;is=69733887&amp;hm=c458b71b6bbb783b779723200f291c8192d8b1d41c19493511300fe3d991fd0e&amp;" type="audio/mpeg">
+    Tarayıcınız audio elementini desteklemiyor.
+</audio>
+
+<script>
+// Fare imleç efekti
+;(function(window) {
+var ctx,
+hue,
+logo,
+form,
+buffer,
+target = {},
+tendrils = [],
+settings = {};
+settings.debug = true;
+settings.friction = 0.5;
+settings.trails = 20;
+settings.size = 50;
+settings.dampening = 0.25;
+settings.tension = 0.98;
+Math.TWO_PI = Math.PI * 2;
+
+function Oscillator(options) {
+    this.init(options || {});
+}
+Oscillator.prototype = (function() {
+    var value = 0;
+    return {
+        init: function(options) {
+            this.phase = options.phase || 0;
+            this.offset = options.offset || 0;
+            this.frequency = options.frequency || 0.001;
+            this.amplitude = options.amplitude || 1;
+        },
+        update: function() {
+            this.phase += this.frequency;
+            value = this.offset + Math.sin(this.phase) * this.amplitude;
+            return value;
+        },
+        value: function() {
+            return value;
+        }
+    };
+})();
+
+function Tendril(options) {
+    this.init(options || {});
+}
+Tendril.prototype = (function() {
+    function Node() {
+        this.x = 0;
+        this.y = 0;
+        this.vy = 0;
+        this.vx = 0;
+    }
+    return {
+        init: function(options) {
+            this.spring = options.spring + (Math.random() * 0.1) - 0.05;
+            this.friction = settings.friction + (Math.random() * 0.01) - 0.005;
+            this.nodes = [];
+            for(var i = 0, node; i < settings.size; i++) {
+                node = new Node();
+                node.x = target.x;
+                node.y = target.y;
+                this.nodes.push(node);
+            }
+        },
+        update: function() {
+            var spring = this.spring,
+                node = this.nodes[0];
+            node.vx += (target.x - node.x) * spring;
+            node.vy += (target.y - node.y) * spring;
+            for(var prev, i = 0, n = this.nodes.length; i < n; i++) {
+                node = this.nodes[i];
+                if(i > 0) {
+                    prev = this.nodes[i - 1];
+                    node.vx += (prev.x - node.x) * spring;
+                    node.vy += (prev.y - node.y) * spring;
+                    node.vx += prev.vx * settings.dampening;
+                    node.vy += prev.vy * settings.dampening;
+                }
+                node.vx *= this.friction;
+                node.vy *= this.friction;
+                node.x += node.vx;
+                node.y += node.vy;
+                spring *= settings.tension;
+            }
+        },
+        draw: function() {
+            var x = this.nodes[0].x,
+                y = this.nodes[0].y,
+                a, b;
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            for(var i = 1, n = this.nodes.length - 2; i < n; i++) {
+                a = this.nodes[i];
+                b = this.nodes[i + 1];
+                x = (a.x + b.x) * 0.5;
+                y = (a.y + b.y) * 0.5;
+                ctx.quadraticCurveTo(a.x, a.y, x, y);
+            }
+            a = this.nodes[i];
+            b = this.nodes[i + 1];
+            ctx.quadraticCurveTo(a.x, a.y, b.x, b.y);
+            ctx.stroke();
+            ctx.closePath();
+        }
+    };
+})();
+
+function init(event) {
+    document.removeEventListener('mousemove', init);
+    document.removeEventListener('touchstart', init);
+    document.addEventListener('mousemove', mousemove);
+    document.addEventListener('touchmove', mousemove);
+    document.addEventListener('touchstart', touchstart);
+    mousemove(event);
+    reset();
+    loop();
+}
+
+function reset() {
+    tendrils = [];
+    for(var i = 0; i < settings.trails; i++) {
+        tendrils.push(new Tendril({
+            spring: 0.45 + 0.025 * (i / settings.trails)
+        }));
+    }
+}
+
+function loop() {
+    if(!ctx.running) return;
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.fillStyle = 'rgba(0,0,0,0.4)';
+    ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.strokeStyle = 'hsla(' + Math.round(hue.update()) + ',90%,50%,0.25)';
+    ctx.lineWidth = 1;
+    for(var i = 0, tendril; i < settings.trails; i++) {
+        tendril = tendrils[i];
+        tendril.update();
+        tendril.draw();
+    }
+    ctx.frame++;
+    requestAnimFrame(loop);
+}
+
+function resize() {
+    ctx.canvas.width = window.innerWidth;
+    ctx.canvas.height = window.innerHeight;
+}
+
+function mousemove(event) {
+    if(event.touches) {
+        target.x = event.touches[0].pageX;
+        target.y = event.touches[0].pageY;
+    } else {
+        target.x = event.clientX;
+        target.y = event.clientY;
+    }
+    event.preventDefault();
+}
+
+function touchstart(event) {
+    if(event.touches.length == 1) {
+        target.x = event.touches[0].pageX;
+        target.y = event.touches[0].pageY;
+    }
+}
+
+window.requestAnimFrame = (function() {
+    return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || function(fn) { window.setTimeout(fn, 1000 / 60) };
+})();
+
+window.onload = function() {
+    ctx = document.getElementById('canvas').getContext('2d');
+    ctx.running = true;
+    ctx.frame = 1;
+    hue = new Oscillator({
+        phase: Math.random() * Math.TWO_PI,
+        amplitude: 85,
+        frequency: 0.0015,
+        offset: 0
+    });
+    document.addEventListener('mousemove', init);
+    document.addEventListener('touchstart', init);
+    window.addEventListener('resize', resize);
+    resize();
+};
+})(window);
+</script>
+
+<script>
+// Menü aç/kapa mantığı
+const triggers = document.querySelectorAll('.trigger-box');
+const wrappers = document.querySelectorAll('.menu-wrapper');
+const menus = document.querySelectorAll('.menu');
+
+function closeAllMenus() {
+    triggers.forEach(t => t.classList.remove('active'));
+    wrappers.forEach(w => w.classList.remove('active-menu'));
+    menus.forEach(m => m.classList.remove('active'));
+}
+
+function toggleMenu(trigger) {
+    const isActive = trigger.classList.contains('active');
+    closeAllMenus();
+    
+    if (!isActive) {
+        trigger.classList.add('active');
+        const menuId = trigger.id.replace('trigger-', 'menu-');
+        const wrapperId = trigger.id.replace('trigger-', 'menu-') + '-wrapper';
+        
+        const menu = document.getElementById(menuId);
+        const wrapper = document.getElementById(wrapperId);
+        
+        if (menu && wrapper) {
+            menu.classList.add('active');
+            wrapper.classList.add('active-menu');
+        }
+    }
+}
+
+triggers.forEach(trigger => {
+    trigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleMenu(trigger);
+    });
+});
+
+document.addEventListener('click', (e) => {
+    if (!Array.from(triggers).some(t => t.contains(e.target)) &&
+        !Array.from(menus).some(m => m.contains(e.target))) {
+        closeAllMenus();
+    }
+});
+
+document.querySelectorAll('.menu-item').forEach(item => {
+    item.addEventListener('click', e => {
+        const link = item.getAttribute('data-link');
+        if (!link) return;
+        
+        if (e.button === 1 || e.ctrlKey || e.metaKey) {
+            e.preventDefault();
+            window.open(link, '_blank');
+        } else {
+            window.location.href = link;
+        }
+    });
+    
+    item.addEventListener('auxclick', e => {
+        if (e.button === 1) e.preventDefault();
+    });
+});
+</script>
+
+<script>
+// MÜZİK OTOMATİK BAŞLATMA
+document.addEventListener('DOMContentLoaded', function() {
+    const backgroundMusic = document.getElementById('background-music');
+    
+    // Müziği otomatik başlat
+    setTimeout(() => {
+        backgroundMusic.play().then(() => {
+            console.log("Müzik otomatik başlatıldı!");
+        }).catch(error => {
+            console.log("Müzik otomatik başlatılamadı, kullanıcı etkileşimi bekleniyor...");
+        });
+    }, 1000);
+    
+    // Müzik bitince tekrar başlat
+    backgroundMusic.addEventListener('ended', function() {
+        this.currentTime = 0;
+        this.play();
+    });
+});
+</script>
+
+</body></html>
